@@ -29,16 +29,6 @@ app.use(
     credentials: true
   })
 )
-// app.use(
-//   cors({
-//     origin: [
-//       'http://localhost:5173',
-//       'https://atp-24-eg-105-g54-blogg-git-035ccb-akhileshs-projects-7e082507.vercel.app',
-//       'https://atp-24-eg-105-g54-blogg-app.vercel.app'  // ← add this
-//     ],
-//     credentials: true
-//   })
-// )
 
 //add cookie parser middleware
 app.use(cookieParser())
@@ -52,19 +42,28 @@ app.use('/author-api', authorApp)
 app.use('/admin-api', adminApp)
 app.use('/auth', commonApp)
 
-//Connect to DB
+// Dedicated Database Connection Function
 const connectDB = async () => {
   try {
+    if (!process.env.DB_URL) {
+      throw new Error("DB_URL environment variable is missing!")
+    }
     await connect(process.env.DB_URL, { family: 4 })
-    console.log('DB Connected')
-    const port = process.env.PORT
-    app.listen(port, () => console.log(`Server listening on ${port}`))
+    console.log('DB Connected successfully')
   } catch (err) {
-    console.log('Error in DB Connect', err)
+    console.error('Error in DB Connect:', err.message)
   }
 }
 
-connectDB()
+// Start the server immediately so Render's health check passes, 
+// using Render's dynamic port or defaulting to 4000 locally.
+const port = process.env.PORT || 4000
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`)
+  
+  // Initiate DB connection in the background
+  connectDB()
+})
 
 //to handle invalid path
 app.use((req, res, next) => {
