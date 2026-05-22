@@ -585,5 +585,4 @@ This frontend application is built using React.js and Vite with modern UI design
 
 The project demonstrates complete frontend development skills required for real-world MERN stack applications.
 
-```
-```
+Frontend deployment Link:https://capstone-g18-54fq.vercel.app/
